@@ -1,10 +1,6 @@
 # Automatización del sitio de Mona con GitHub Agentic Workflows
 
-<br>
-
 # Objetivos
-
-<br>
 
 En este laboratorio aprenderás a crear un agente mediante GitHub Agentic Workflows para actualizar automáticamente el contenido de un sitio web.
 
@@ -16,11 +12,7 @@ En este laboratorio aprenderás a crear un agente mediante GitHub Agentic Workfl
 * Generar un Pull Request con los cambios propuestos.
 * Utilizar Safe Outputs para evitar modificaciones directas en la rama `main`.
 
-<br>
-
 # Requisitos
-
-<br>
 
 * Cuenta en GitHub.
 * Acceso a GitHub Copilot.
@@ -30,15 +22,9 @@ En este laboratorio aprenderás a crear un agente mediante GitHub Agentic Workfl
 * Conocimientos básicos sobre el uso de una terminal integrada.
 * Tiempo estimado: 45 minutos.
 
-<br>
-
 # Pasos
 
-<br>
-
 ## Crear el repositorio del laboratorio
-
-<br>
 
 * [BROWSER] https://github.com/skills/agentic-workflows-that-read-the-room
   * Iniciar sesión con una cuenta de GitHub.
@@ -56,11 +42,7 @@ En este laboratorio aprenderás a crear un agente mediante GitHub Agentic Workfl
   * [BUTTON] I Trust, si aparece la solicitud de confianza.
   * Verificar que la terminal esté disponible en la parte inferior.
 
-<br>
-
 ## Ejecutar el sitio web
-
-<br>
 
 * [BROWSER] GitHub Codespaces
   * [BUTTON] Run and Debug
