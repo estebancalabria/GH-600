@@ -1,12 +1,14 @@
-# Laboratorio: I**roducción a CODEOWNERS
+# Laboratorio: Inroducción a CODEOWNERS
 
-## Objeti**
+## Objetivo
 
-En este laboratorio vas a crear**n archivo `CODEOWNERS` y comproba**su funcionamiento mediante un Pul**Request.
+En este laboratorio vas a crearcion archivo `CODEOWNERS` y comprobar su funcionamiento mediante un Pull Request.
 
-`CODEOWNERS` permite de**nir qué usuarios o equipos son re**onsables de determinadas partes d**un repositorio. GitHub utiliza es**s reglas para solicitar revisione**según los archivos modificados. 【1-71a642\|12】
+`CODEOWNERS` permite de**nir qué usuarios o equipos son re**onsables de determinadas partes d**un repositorio. GitHub utiliza es**s reglas para solicitar revisione**según los archivos modificados. 
 
-## 1. Crear una rama**Desde la terminal del repositorio**jecuta:
+## 1. Crear una rama
+
+Desde la terminal del repositorio ejecuta:
 
 ```bash
 git checkout -b **d-codeowners
