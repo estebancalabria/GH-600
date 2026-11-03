@@ -1,4 +1,4 @@
-# Hello World con GitHub Copilot CLI: crear un agente revisor de código
+# GitHub Copilot CLI: crear un agente revisor de código
 
 # Objetivos
 
