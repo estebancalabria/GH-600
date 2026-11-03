@@ -29,27 +29,22 @@ En este laboratorio aprenderás a utilizar GitHub Copilot CLI para coordinar un 
 
 ## Crear el repositorio del laboratorio
 
-* [BROWSER] [https://github.com/skills/agent-orchestration-build-your-ai-dream-team](https://github.com/skills/agent-orchestration-build-your-ai-dream-team)
+* [BROWSER] [https://github.com/
   * Iniciar sesión con una cuenta de GitHub.
-  * Desplazarse hasta la sección del ejercicio.
-  * [BUTTON] Copy Exercise
-  * Mantener la configuración predeterminada.
-  * [BUTTON] Create repository
-  * Esperar entre 15 y 20 segundos.
-  * Actualizar la página.
-  * [BUTTON] Go to exercise
-  * Hacer clic con el botón derecho en `Open in GitHub Codespaces`.
-  * Abrir el enlace en una pestaña nueva.
-  * Confirmar que el repositorio seleccionado sea la copia personal del ejercicio.
-  * [BUTTON] Create Codespace
 
-* Esperar hasta que Visual Studio Code termine de cargar en el navegador.
-  * [BUTTON] I Trust, si aparece la solicitud de confianza.
+* [BROWSER] [https://github.com/skills/agent-orchestration-build-your-ai-dream-team](https://github.com/skills/agent-orchestration-build-your-ai-dream-team)
+  * [SCROLL] Desplazarse hasta la sección del ejercicio.
+  * [BUTTON] Copy Exercise
+  * Generar un repositorio nuevo
+
+* [BROWSER] Ir al repsoitorio recien creado
+  * [BUTTON] Code
+    * [BUTTON] Creade Codespace on Main
   * Verificar que la terminal esté disponible en la parte inferior.
 
 > La copia personal del repositorio se crea dentro de la cuenta del alumno. El repositorio original pertenece a la organización `github`.
 
-## Iniciar GitHub Copilot CLI
+## Iniciar GitHub Copilot CLI (opcional)
 
 * [CONSOLE]
 
