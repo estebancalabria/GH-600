@@ -134,3 +134,9 @@ Repasar el recorrido completo de la clase:
 - Kahoots: 20 min
 - Breaks: 30 min
 - Total: 240 min / 4 horas
+
+---
+
+# Planificación - Clase 3
+
+**Duración:** 4 horas
