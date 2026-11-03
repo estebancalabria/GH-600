@@ -140,3 +140,9 @@ Repasar el recorrido completo de la clase:
 # Planificación - Clase 3
 
 **Duración:** 4 horas
+
+## 1. Introducción lo que vamos a ver en la clase - 15 min
+
+## 2. Ejercicio agente github copilot CLI
+
+## 3. Laboratorio multi agentes
