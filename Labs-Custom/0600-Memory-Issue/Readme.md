@@ -2,19 +2,18 @@
 
 # Objetivos
 
-En este laboratorio aprenderás a implementar una forma simple de memoria externa para un agente utilizando GitHub Issues.
+En este laboratorio aprenderás a implementar una forma simple de memoria externa utilizando GitHub Issues.
 
 El laboratorio utilizará ejecuciones independientes de GitHub Actions.
 
-En la primera ejecución, GitHub Copilot generará una frase inventada y el workflow la almacenará en un Issue.
+En una primera ejecución, GitHub Copilot generará una frase inventada y el workflow la almacenará en un Issue.
 
-En una segunda ejecución, el workflow localizará ese Issue, recuperará la frase almacenada y la mostrará nuevamente.
+En una segunda ejecución, el workflow localizará el Issue, recuperará la frase almacenada y la mostrará nuevamente.
 
 * Crear un repositorio en GitHub.
-* Abrir el repositorio utilizando GitHub Codespaces.
-* Crear un Fine-grained Personal Access Token.
+* Crear un Fine-grained Personal Access Token para GitHub Copilot.
 * Almacenar el token como un GitHub Actions Secret.
-* Crear una label para identificar la memoria del agente.
+* Crear una label para identificar el Issue utilizado como memoria.
 * Crear un workflow de GitHub Actions.
 * Utilizar GitHub Copilot para generar una frase.
 * Persistir la frase en un GitHub Issue.
@@ -23,14 +22,14 @@ En una segunda ejecución, el workflow localizará ese Issue, recuperará la fra
 * Localizar el Issue utilizado como memoria.
 * Recuperar la frase almacenada.
 * Mostrar la frase en los logs.
-* Comprobar que la información puede persistir entre ejecuciones independientes.
+* Comprobar que la información persiste entre ejecuciones independientes.
+* Actualizar la memoria y recuperar posteriormente su nuevo valor.
 
 # Requisitos
 
 * Cuenta en GitHub.
 * Acceso a GitHub Copilot.
 * Acceso a GitHub Actions.
-* Acceso a GitHub Codespaces.
 * Permisos para crear un Fine-grained Personal Access Token.
 * Permisos para administrar secrets del repositorio.
 * Permisos para crear y modificar Issues.
@@ -55,41 +54,9 @@ agent-memory-lab
 
 * Esperar hasta que se muestre el nuevo repositorio.
 
-## Abrir el repositorio en GitHub Codespaces
-
-* [BROWSER] Repositorio `agent-memory-lab`
-  * [BUTTON] Code
-  * Seleccionar la pestaña `Codespaces`.
-  * [BUTTON] Create codespace on main
-
-* Esperar hasta que GitHub Codespaces termine de iniciar.
-
-* Si aparece una solicitud de confianza:
-  * [BUTTON] I Trust
-
-* Verificar que la terminal esté disponible.
-
-## Verificar GitHub CLI
-
-* [CONSOLE]
-
-```bash
-gh --version
-```
-
-Verificar también el estado de autenticación:
-
-* [CONSOLE]
-
-```bash
-gh auth status
-```
-
-La terminal debería mostrar que GitHub CLI se encuentra autenticada.
-
 ## Crear un Fine-grained Personal Access Token
 
-Ahora crearemos la credencial que utilizará GitHub Copilot durante la ejecución del workflow.
+Crearemos una credencial que utilizará GitHub Copilot durante la ejecución del workflow.
 
 * [BROWSER] GitHub
   * Seleccionar la imagen de perfil.
@@ -146,18 +113,18 @@ Verificar que aparezca:
 COPILOT_GITHUB_TOKEN
 ```
 
-El workflow podrá utilizar esta credencial durante la ejecución sin almacenar su valor en el repositorio.
+El workflow utilizará esta credencial durante la ejecución sin almacenar su valor directamente en el archivo YAML.
 
 > [!IMPORTANT]
 > El Personal Access Token es la credencial.
 >
-> `COPILOT_GITHUB_TOKEN` es el secret utilizado para almacenarla de forma segura y ponerla a disposición del workflow durante la ejecución.
+> `COPILOT_GITHUB_TOKEN` es el secret que utilizamos para almacenarla y ponerla a disposición del workflow.
 
 ## Crear una label para identificar la memoria
 
-El repositorio utilizará un Issue como almacenamiento persistente.
+El laboratorio utilizará un GitHub Issue como almacenamiento persistente.
 
-Para poder localizar ese Issue posteriormente utilizaremos una label específica.
+Para poder localizar posteriormente ese Issue, utilizaremos una label específica.
 
 * [BROWSER] Repositorio `agent-memory-lab`
   * Seleccionar `Issues`.
@@ -187,40 +154,32 @@ agent-memory
 identificará el Issue utilizado como memoria externa.
 
 > [!IMPORTANT]
-> No recuperaremos un Issue simplemente porque sea el último Issue creado.
+> No recuperaremos un Issue porque sea el último Issue creado.
 >
-> El workflow buscará explícitamente un Issue identificado con la label `agent-memory`.
+> El workflow buscará explícitamente el Issue identificado mediante la label `agent-memory`.
 
 ## Crear el workflow
 
-Crear las carpetas:
+Crearemos el workflow directamente desde la interfaz web de GitHub.
 
-```text
-.github
-.github/workflows
-```
+* [BROWSER] Repositorio `agent-memory-lab`
+  * Seleccionar `Actions`.
+  * Seleccionar `New workflow`.
+  * Seleccionar `set up a workflow yourself`.
 
-Dentro de `.github/workflows`, crear:
+En el nombre del archivo, ingresar:
 
 ```text
 memory.yml
 ```
 
-La estructura debería quedar:
+El archivo deberá quedar almacenado en:
 
 ```text
-agent-memory-lab
-│
-├── .github
-│   └── workflows
-│       └── memory.yml
-│
-└── README.md
+.github/workflows/memory.yml
 ```
 
-* [FILE] `.github/workflows/memory.yml`
-
-Agregar:
+Reemplazar el contenido por:
 
 ```yaml
 name: Agent memory demo
@@ -369,44 +328,65 @@ jobs:
           echo "$PHRASE"
 ```
 
-* Guardar el archivo.
+* [BUTTON] Commit changes
 
-El workflow contiene dos operaciones:
+En el mensaje del commit, ingresar:
+
+```text
+Add agent memory workflow
+```
+
+* [BUTTON] Commit changes
+
+## Comprender las dos operaciones
+
+El workflow permite seleccionar entre dos operaciones:
 
 ```text
 remember
 recall
 ```
 
-`remember` genera y almacena una memoria.
+La operación:
 
-`recall` recupera esa memoria durante una ejecución posterior.
-
-## Publicar el workflow
-
-* [CONSOLE]
-
-```bash
-git add .
+```text
+remember
 ```
 
-* [CONSOLE]
+genera una frase con GitHub Copilot y la almacena en un Issue.
 
-```bash
-git commit -m "Add agent memory workflow"
+La operación:
+
+```text
+recall
 ```
 
-* [CONSOLE]
+se ejecuta posteriormente, localiza ese Issue y recupera la información almacenada.
 
-```bash
-git push
+El flujo que vamos a comprobar es:
+
+```text
+remember
+   ↓
+Copilot genera una frase
+   ↓
+Issue
+   ↓
+workflow termina
+
+
+recall
+   ↓
+nuevo workflow run
+   ↓
+Issue
+   ↓
+recupera la frase
 ```
-
-* Esperar hasta que finalice el push.
 
 ## Primera ejecución: guardar una memoria
 
-Primero ejecutaremos el workflow en modo:
+Primero ejecutaremos:
 
 ```text
 remember
@@ -457,24 +437,24 @@ Los pingüinos programan mejor cuando nadie mira el teclado.
 ```
 
 > [!NOTE]
-> La frase es generada por Copilot durante la ejecución.
+> La frase es generada durante la ejecución.
 >
 > El resultado puede ser diferente cada vez que se ejecute `remember`.
 
-## Verificar el Issue de memoria
+## Verificar el Issue utilizado como memoria
 
 Después de finalizar el workflow:
 
 * [BROWSER] Repositorio
   * Seleccionar `Issues`.
 
-Localizar el Issue:
+Localizar:
 
 ```text
 Agent Memory
 ```
 
-Verificar que tenga la label:
+Verificar que el Issue tenga la label:
 
 ```text
 agent-memory
@@ -494,16 +474,16 @@ Los pingüinos programan mejor cuando nadie mira el teclado.
 Stored by the Agent Memory Lab.
 ```
 
-La frase ahora existe fuera del workflow run que la generó.
+La frase ahora se encuentra almacenada fuera del workflow run que la generó.
 
 > [!IMPORTANT]
 > El workflow que generó la frase ya terminó.
 >
-> Las variables utilizadas por esa ejecución ya no son necesarias.
+> Las variables y outputs de esa ejecución no serán utilizados por la siguiente ejecución.
 >
-> La información se encuentra persistida en un recurso del repositorio.
+> La información que queremos conservar está almacenada en un recurso persistente de GitHub.
 
-## Observar dónde quedó almacenada la información
+## Observar la memoria persistente
 
 El flujo realizado hasta este momento es:
 
@@ -514,22 +494,20 @@ GitHub Copilot
       ↓
 genera una frase
       ↓
-GitHub Issue
+Issue: Agent Memory
       ↓
 label: agent-memory
       ↓
 workflow termina
 ```
 
-El primer workflow run puede finalizar completamente.
+El primer workflow run terminó.
 
-No es necesario mantener abierto el runner.
-
-La información permanece almacenada en el Issue.
+Sin embargo, la información continúa existiendo en el Issue.
 
 ## Segunda ejecución: recuperar la memoria
 
-Ahora iniciaremos una ejecución completamente nueva.
+Ahora iniciaremos una ejecución nueva.
 
 * [BROWSER] Repositorio
   * Seleccionar `Actions`.
@@ -559,4 +537,376 @@ Recall the phrase
 
 Esta ejecución es independiente de la ejecución que generó la frase.
 
-## Localizar la 
+## Localizar la memoria
+
+Abrir el paso:
+
+```text
+Find memory Issue
+```
+
+El workflow busca un Issue abierto identificado mediante:
+
+```text
+agent-memory
+```
+
+La operación utilizada es equivalente a:
+
+```bash
+gh issue list \
+  --label "agent-memory" \
+  --state open \
+  --json number
+```
+
+El workflow no depende del número del último Issue creado.
+
+Busca explícitamente el recurso marcado como memoria del laboratorio.
+
+## Recuperar la frase
+
+Abrir:
+
+```text
+Read memory Issue
+```
+
+El workflow obtiene el contenido del Issue.
+
+Luego recupera la sección:
+
+```text
+## Stored memory
+```
+
+Verificar que los logs muestren algo similar a:
+
+```text
+Memory recovered from Issue #1
+
+Remembered phrase:
+Los pingüinos programan mejor cuando nadie mira el teclado.
+```
+
+La frase debe ser la misma que fue almacenada durante la ejecución anterior.
+
+## Comparar las dos ejecuciones
+
+Volver a:
+
+* [BROWSER] Repositorio
+  * Seleccionar `Actions`.
+  * Seleccionar:
+
+```text
+Agent memory demo
+```
+
+Deberían existir dos workflow runs diferentes.
+
+La primera ejecución utilizó:
+
+```text
+remember
+```
+
+La segunda ejecución utilizó:
+
+```text
+recall
+```
+
+El flujo completo fue:
+
+```text
+Workflow run #1
+      ↓
+Copilot genera una frase
+      ↓
+Issue: Agent Memory
+      ↓
+workflow termina
+
+
+Workflow run #2
+      ↓
+nuevo runner
+      ↓
+Find memory Issue
+      ↓
+Read memory Issue
+      ↓
+recupera la frase
+```
+
+> [!IMPORTANT]
+> La segunda ejecución no comparte variables ni outputs con la primera.
+>
+> La información necesaria para continuar se encuentra en el Issue.
+
+## Modificar la memoria
+
+Ahora volveremos a ejecutar:
+
+```text
+remember
+```
+
+* [BROWSER] Actions
+  * Seleccionar:
+
+```text
+Agent memory demo
+```
+
+  * [BUTTON] Run workflow
+
+En `Memory operation`, seleccionar:
+
+```text
+remember
+```
+
+* [BUTTON] Run workflow
+
+Copilot generará una nueva frase.
+
+Por ejemplo:
+
+```text
+Las tortugas revisan los pull requests antes del desayuno.
+```
+
+Esta vez el workflow encontrará el Issue existente identificado mediante:
+
+```text
+agent-memory
+```
+
+En lugar de crear un nuevo Issue, actualizará el contenido del existente.
+
+## Verificar la actualización de la memoria
+
+* [BROWSER] Repositorio
+  * Seleccionar `Issues`.
+  * Abrir:
+
+```text
+Agent Memory
+```
+
+Comprobar que:
+
+* Sigue existiendo un único Issue de memoria.
+* El Issue continúa teniendo la label `agent-memory`.
+* La frase almacenada cambió.
+
+El contenido podría ser:
+
+```text
+## Stored memory
+
+Las tortugas revisan los pull requests antes del desayuno.
+
+## Metadata
+
+Stored by the Agent Memory Lab.
+```
+
+La memoria tiene ahora un nuevo valor.
+
+## Recuperar nuevamente la memoria
+
+Ejecutar nuevamente:
+
+```text
+Agent memory demo
+```
+
+Seleccionar:
+
+```text
+recall
+```
+
+Abrir el paso:
+
+```text
+Read memory Issue
+```
+
+Verificar que ahora aparezca:
+
+```text
+Remembered phrase:
+Las tortugas revisan los pull requests antes del desayuno.
+```
+
+La ejecución recuperó el valor actualmente almacenado en el Issue.
+
+No recuperó la frase de la primera ejecución.
+
+## Analizar qué ocurrió
+
+Durante el laboratorio realizamos cuatro ejecuciones independientes:
+
+```text
+RUN #1
+remember
+   ↓
+Copilot genera frase A
+   ↓
+Issue guarda frase A
+
+
+RUN #2
+recall
+   ↓
+Issue
+   ↓
+recupera frase A
+
+
+RUN #3
+remember
+   ↓
+Copilot genera frase B
+   ↓
+Issue actualiza la memoria
+   ↓
+guarda frase B
+
+
+RUN #4
+recall
+   ↓
+Issue
+   ↓
+recupera frase B
+```
+
+Los workflow runs son ejecuciones separadas.
+
+El elemento que proporciona continuidad entre ellas es:
+
+```text
+Issue: Agent Memory
+Label: agent-memory
+```
+
+## Diferenciar contexto y memoria
+
+Durante `remember`, existen temporalmente datos dentro de la ejecución:
+
+```text
+PHRASE
+steps.phrase.outputs.phrase
+```
+
+Esos datos pertenecen al contexto de esa ejecución.
+
+Cuando la ejecución termina, el siguiente workflow run no depende de esas variables.
+
+En cambio:
+
+```text
+Issue: Agent Memory
+```
+
+continúa existiendo en GitHub.
+
+Por eso, en este laboratorio, el Issue funciona como memoria externa.
+
+## Identificar la memoria
+
+La label:
+
+```text
+agent-memory
+```
+
+cumple una función importante.
+
+Permite que una ejecución futura pueda localizar el recurso que contiene la información.
+
+El patrón utilizado es:
+
+```text
+guardar
+   ↓
+marcar
+   ↓
+terminar
+   ↓
+localizar
+   ↓
+recuperar
+```
+
+Esto evita depender de reglas frágiles como:
+
+```text
+recuperar el último Issue creado
+```
+
+La memoria tiene una identidad explícita dentro del repositorio.
+
+# Conclusiones
+
+En este laboratorio aprendimos a:
+
+* Crear una credencial para utilizar GitHub Copilot desde GitHub Actions.
+* Almacenar esa credencial como un GitHub Actions Secret.
+* Utilizar GitHub Copilot para generar información.
+* Utilizar un GitHub Issue como memoria externa.
+* Utilizar una label para identificar dónde se encuentra esa memoria.
+* Generar información en una ejecución.
+* Persistir esa información fuera del workflow run.
+* Finalizar completamente la ejecución que creó la información.
+* Iniciar una nueva ejecución independiente.
+* Localizar posteriormente la memoria.
+* Recuperar la información almacenada.
+* Actualizar la memoria existente.
+* Recuperar el valor actualizado desde otra ejecución.
+* Mantener un único Issue como fuente de verdad para la memoria del laboratorio.
+
+El comportamiento final es:
+
+```text
+        WORKFLOW RUN #1
+               ↓
+           Copilot
+               ↓
+       genera una frase
+               ↓
+     Issue: Agent Memory
+      label: agent-memory
+               ↓
+        ejecución termina
+
+
+        WORKFLOW RUN #2
+               ↓
+        nuevo contexto
+               ↓
+    busca agent-memory
+               ↓
+     Issue: Agent Memory
+               ↓
+       recupera la frase
+```
+
+La idea principal del laboratorio es:
+
+```text
+El contexto de una ejecución es temporal.
+
+La información que necesitamos conservar
+se guarda fuera de ese contexto.
+
+Una ejecución futura puede localizar
+esa información y recuperarla.
+```
+
+En este ejemplo, GitHub Issue funciona como memoria externa persistente entre ejecuciones independientes.
