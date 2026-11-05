@@ -104,6 +104,172 @@ jobs:
 # Hasta y 30
 --
 
+## LAboratorio uso memoria (con algo de copilot)
+
+* Crear un secreto a nivel Usuario
+   * (usuario) -> Settings -> Developer Settings -> PAT
+     * Permisos
+       * Account : Copilot Requests
+       * Repository : Issues (No se si es necesesario) REad and Write
+
+* Copiar el PAT en un lugar seguro se muestra una sola vez
+
+* Crear secreo a nivel repositorio
+  * (Repo) -> Settings -> Settings and Variables -> Actions
+    * COPILOT_GITHUB_TOKEN
+    * Ponerle el PAT que sacamos anteriomente
+   
+* en .github/workflows/memeory.yaml
+
+```
+name: Agent memory demo
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: Memory operation
+        required: true
+        type: choice
+        options:
+          - remember
+          - recall
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  remember:
+    name: Remember a phrase
+    if: ${{ inputs.action == 'remember' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install GitHub Copilot CLI
+        run: |
+          npm install -g @github/copilot
+
+      - name: Generate phrase with Copilot
+        id: phrase
+        env:
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+        run: |
+          PHRASE=$(copilot -p \
+            "Inventar una frase corta e inaginativa. Devovler la frase sin acotar nada mas")
+
+          echo "Generated phrase:"
+          echo "$PHRASE"
+
+          {
+            echo "phrase<<EOF"
+            echo "$PHRASE"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Find existing memory Issue
+        id: memory
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ISSUE_NUMBER=$(gh issue list \
+            --label "agent-memory" \
+            --state open \
+            --json number \
+            --jq '.[0].number // empty')
+
+          echo "issue_number=$ISSUE_NUMBER" >> "$GITHUB_OUTPUT"
+
+      - name: Create memory Issue
+        if: ${{ steps.memory.outputs.issue_number == '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PHRASE: ${{ steps.phrase.outputs.phrase }}
+        run: |
+          gh issue create \
+            --title "Agent Memory" \
+            --label "agent-memory" \
+            --body "$(cat <<EOF
+          ## Stored memory
+
+          $PHRASE
+
+          ## Metadata
+
+          Stored by the Agent Memory Lab.
+          EOF
+          )"
+
+      - name: Update memory Issue
+        if: ${{ steps.memory.outputs.issue_number != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PHRASE: ${{ steps.phrase.outputs.phrase }}
+          ISSUE_NUMBER: ${{ steps.memory.outputs.issue_number }}
+        run: |
+          gh issue edit "$ISSUE_NUMBER" \
+            --body "$(cat <<EOF
+          ## Stored memory
+
+          $PHRASE
+
+          ## Metadata
+
+          Stored by the Agent Memory Lab.
+          EOF
+          )"
+
+      - name: Confirm stored memory
+        run: |
+          echo "The phrase was stored in a GitHub Issue."
+
+  recall:
+    name: Recall the phrase
+    if: ${{ inputs.action == 'recall' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Find memory Issue
+        id: memory
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ISSUE_NUMBER=$(gh issue list \
+            --label "agent-memory" \
+            --state open \
+            --json number \
+            --jq '.[0].number // empty')
+
+          if [ -z "$ISSUE_NUMBER" ]; then
+            echo "No memory Issue was found."
+            exit 1
+          fi
+
+          echo "issue_number=$ISSUE_NUMBER" >> "$GITHUB_OUTPUT"
+
+      - name: Read memory Issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ steps.memory.outputs.issue_number }}
+        run: |
+          BODY=$(gh issue view "$ISSUE_NUMBER" \
+            --json body \
+            --jq '.body')
+
+          PHRASE=$(printf '%s\n' "$BODY" |
+            sed -n '/^## Stored memory$/,/^## Metadata$/p' |
+            sed '1d;$d' |
+            sed '/^[[:space:]]*$/d')
+
+          echo "Memory recovered from Issue #$ISSUE_NUMBER"
+          echo ""
+          echo "Remembered phrase:"
+          echo "$PHRASE"
+```
+
+* Vamos a (Repo)->Issues->LAbes
+  * Vamos a crear el label "agent-memory"
+
 # Multi agente
 
 
