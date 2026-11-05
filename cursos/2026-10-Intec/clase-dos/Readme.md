@@ -21,7 +21,7 @@
    
 ---
 
-# Links y NOtas
+# Links y Notas
 
 * https://www.examtopics.com/exams/microsoft/gh-600/
 * Para la certificacion ver la sintaxis del YAML (aca en este repo hay material)
@@ -87,6 +87,22 @@ jobs:
 > Prestarle atencion a la parte de Enviroment
 
 * Voy a ir a (proyecto) -> Settings -> Enviroment
+  * Crear un enviroment con aprobadores y poner al usuario actual
+ 
+* Ejectuar el workflow y verificar el proceso de aprobacion
+
+## Laboratorio Human-in-The-Loop con Pull Request
+ 
+* La proteccion de un branch por pull request se hace en
+ * (Proyecto) -> Settings -> Rule Set
+   * New Ruleset -> NEw Branch RuleSet
+     * Creamos un Rule Set para el banch mail
+     * Require a pull request before merging
+
+---
+# Break
+# Hasta y 30
+--
 
 # Multi agente
 
